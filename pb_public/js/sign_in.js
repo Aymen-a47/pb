@@ -1,26 +1,28 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("loginForm");
-    const errorMessage = document.getElementById("error-message");
-    
-    const pb = new PocketBase("http://localhost:8090"); // تأكد من تغيير الرابط إلى عنوان السيرفر الخاص بك
-
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-        
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        try {
-            const newUser = await pb.collection("users").create({
-                email: email,
-                password: password,
-                passwordConfirm: password, // PocketBase يتطلب تأكيد الباسورد عند الإنشاء
-            });
-            
-            alert("تم إنشاء الحساب بنجاح!");
-            window.location.href = "/pb_public/html/Home.html"; // غير الرابط حسب الحاجة
-        } catch (error) {
-            errorMessage.textContent = "فشل في إنشاء الحساب: " + error.message;
-        }
-    });
-});
+document.getElementById('loginForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // منع إعادة تحميل الصفحة
+  
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('errorMessage');
+  
+    // إنشاء مثيل من PocketBase
+    const pb = new PocketBase('http://127.0.0.1:8090'); // استبدل بعنوان URL الخاص بك
+  
+    try {
+      // تسجيل الدخول
+      const authData = await pb.collection('Students').authWithPassword(email, password);
+  
+      // إذا نجح تسجيل الدخول
+      console.log('تم تسجيل الدخول بنجاح:', authData);
+      errorMessage.textContent = 'تم تسجيل الدخول بنجاح!';
+      errorMessage.style.color = 'green';
+  
+      // توجيه المستخدم إلى صفحة أخرى (اختياري)
+      window.location.href = '/dashboard'; // استبدل بالصفحة التي تريد توجيه المستخدم إليها
+    } catch (error) {
+      // إذا فشل تسجيل الدخول
+      console.error('فشل تسجيل الدخول:', error.message);
+      errorMessage.textContent = 'فشل تسجيل الدخول: بريد إلكتروني أو كلمة مرور خاطئة.';
+      errorMessage.style.color = 'red';
+    }
+  });
