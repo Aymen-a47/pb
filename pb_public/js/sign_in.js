@@ -1,20 +1,25 @@
-// استيراد مكتبة PocketBase
-import PocketBase from 'pocketbase';
 
-// إنشاء مثيل من PocketBase
-const pb = new PocketBase('http://127.0.0.1:8090'); // استبدل بعنوان URL الخاص بك
+const pb = new PocketBase('http://127.0.0.1:8090');
 
 // دالة لتسجيل الدخول
 async function loginStudent(email, password) {
     try {
-        // البحث عن الطالب باستخدام البريد الإلكتروني
-        const authData = await pb.collection("users").authWithPassword(email, password);
+
+        const authData = await pb.collection('users').authWithPassword(
+            email,
+            password,
+        );
+
         if (authData) {
-            // تسجيل الدخول بنجاح
-            console.log('تم تسجيل الدخول بنجاح');
+            console.log('تم تسجيل الدخول بنجاح:', authData);
+            // تحويل المستخدم إلى صفحة الرئيسية
+            alert('تم تسجيل الدخول بنجاح');
+            window.location.href = 'home.html';
         }
+
     } catch (error) {
         // حدث خطأ أثناء تسجيل الدخول
+        alert('حدث خطأ أثناء تسجيل الدخول');
         console.error('حدث خطأ أثناء تسجيل الدخول:', error);
     }
 }
