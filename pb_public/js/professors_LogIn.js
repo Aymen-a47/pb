@@ -5,7 +5,7 @@ const pb = new PocketBase('http://127.0.0.1:8090');
 async function loginStudent(email, password) {
     try {
 
-        const authData = await pb.collection('users').authWithPassword(
+        const authData = await pb.collection('Professors').authWithPassword(
             email,
             password,
         );
