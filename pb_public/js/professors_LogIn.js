@@ -14,7 +14,7 @@ async function loginStudent(email, password) {
             console.log('تم تسجيل الدخول بنجاح:', authData);
             // تحويل المستخدم إلى صفحة الرئيسية
             alert('تم تسجيل الدخول بنجاح');
-            window.location.href = 'testProfEdit.html';
+            window.location.href = 'Prof_Edit_dishbord.html';
         }
 
     } catch (error) {
