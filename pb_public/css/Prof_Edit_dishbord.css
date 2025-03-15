@@ -1,0 +1,133 @@
+body {
+    font-family: 'Cairo', 'Changa', Geneva, Verdana, sans-serif;
+    background: linear-gradient(to left, #3A75E2, #20407C);
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #3A75E2; /* لون أزرق فاتح */
+    text-align: center;
+}
+
+/* نماذج الإضافة والتعديل */
+.add-lecture, .edit-lecture {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.add-lecture form div, .edit-lecture form div {
+    margin-bottom: 15px;
+}
+
+.add-lecture label, .edit-lecture label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #3A75E2; /* لون أزرق فاتح */
+}
+
+.add-lecture input, .add-lecture textarea, .add-lecture button,
+.edit-lecture input, .edit-lecture textarea, .edit-lecture button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.add-lecture input:focus, .add-lecture textarea:focus,
+.edit-lecture input:focus, .edit-lecture textarea:focus {
+    border-color: #00BFFF; /* لون أزرق فاتح */
+    box-shadow: 0 0 5px rgba(0, 191, 255, 0.5); /* ظل أزرق فاتح */
+}
+
+.add-lecture button, .edit-lecture button {
+    background: linear-gradient(to left, #3A75E2, #20407C);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.add-lecture button:hover, .edit-lecture button:hover {
+    background: linear-gradient(to left, #3A75E2, #20407C);
+}
+
+/* قائمة المحاضرات */
+.lectures-list {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.lectures-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.lectures-list li {
+    background: #f9f9f9;
+    margin: 10px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.lectures-list li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.lectures-list li button {
+    margin-left: 5px;
+    background: linear-gradient(to left, #3A75E2, #20407C);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+.lectures-list li button:hover {
+    background: linear-gradient(to left, #3A75E2, #20407C);
+}
+
+/* منطقة عرض PDF */
+.pdf-viewer {
+    margin-top: 20px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+iframe {
+    border: none;
+    border-radius: 5px;
+}
