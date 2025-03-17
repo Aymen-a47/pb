@@ -22,10 +22,10 @@ window.addEventListener('load', () => {
     setInterval(nextSlide, 7000); // تقليب كل 5 ثوانٍ
 });
 
- // زر التمرير لأسفل
- document.querySelector('.scroll-down-btn').addEventListener('click', () => {
-     window.scrollTo({
-         top: window.innerHeight,
-         behavior: 'smooth'
-     });
- });
+//  // زر التمرير لأسفل
+//  document.querySelector('.scroll-down-btn').addEventListener('click', () => {
+//      window.scrollTo({
+//          top: window.innerHeight,
+//          behavior: 'smooth'
+//      });
+//  });

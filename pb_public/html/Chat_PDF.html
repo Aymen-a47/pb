@@ -7,32 +7,68 @@
     <link rel="stylesheet" href="/pb_public/css/Chat_PDF.css">
 </head>
 <body>
-    <div class="content">pdf</div>
-    <div class="sidebar">
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
-        <button class="menu-button">ملزمة</button>
+    <div class="content" id="content">pdf</div>
+    <div class="sidebar" id="sidebar">
+        <!-- هنا سيتم عرض قائمة المحاضرات بشكل ديناميكي -->
     </div>
     <div class="container">
-     
-      <div class="chatbot">
-          <div id="chat-window">
-              <div id="chat-messages"></div>
-          </div>
-          <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا..." />
-          <button id="send-btn">إرسال</button>
-      </div>
-  </div>
-
+        <div class="chatbot">
+            <div id="chat-window">
+                <div id="chat-messages"></div>
+            </div>
+            <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا..." />
+            <button id="send-btn">إرسال</button>
+        </div>
+    </div>
     <div class="ai-button">AI</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/pocketbase/dist/pocketbase.umd.js"></script>
+    <script>
+        const pb = new PocketBase('http://127.0.0.1:8090'); // الاتصال بالنسخة المحلية
+
+        // دالة لجلب المحاضرات وعرضها
+        async function fetchLectures() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.innerHTML = ''; // مسح القائمة الحالية
+
+            // الحصول على اسم المادة من localStorage
+            const selectedSubject = localStorage.getItem('selectedSubject');
+
+            if (!selectedSubject) {
+                alert('لم يتم تحديد مادة.');
+                return;
+            }
+
+            try {
+                // جلب المحاضرات الخاصة بالمادة المحددة
+                const records = await pb.collection('Lectures').getFullList({
+                    filter: `Subject = '${selectedSubject}'`, // تصفية حسب المادة
+                    sort: '-created', // ترتيب حسب التاريخ (الأحدث أولاً)
+                });
+
+                // عرض البيانات في القائمة
+                records.forEach((lecture) => {
+                    const button = document.createElement('button');
+                    button.className = 'menu-button';
+                    button.textContent = lecture.title; // عرض عنوان المحاضرة
+                    button.onclick = () => viewPdf(lecture); // عرض ملف PDF عند الضغط
+                    sidebar.appendChild(button);
+                });
+            } catch (error) {
+                console.error('فشل في جلب المحاضرات:', error);
+                sidebar.innerHTML = '<p>حدث خطأ أثناء جلب المحاضرات.</p>';
+            }
+        }
+
+        // دالة لعرض ملف PDF مباشرةً من PocketBase
+        function viewPdf(lecture) {
+            const content = document.getElementById('content');
+            const pdfUrl = pb.files.getUrl(lecture, lecture.pdf_lec); // الحصول على رابط الملف
+            content.innerHTML = `<iframe src="${pdfUrl}" width="700px" height="700px"></iframe>`;
+        }
+
+        // جلب المحاضرات عند تحميل الصفحة
+        window.onload = fetchLectures;
+    </script>
 </body>
 </html>

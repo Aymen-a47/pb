@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عرض المحاضرات</title>
 
-      <!-- خط -->
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link
+    <!-- خط -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=Changa:wght@200..800&display=swap"
         rel="stylesheet"
-      />
+    />
 
     <link rel="stylesheet" href="../css/Prof_Edit_dishbord.css">
 </head>
@@ -32,10 +32,6 @@
                     <textarea id="description" name="description" required></textarea>
                 </div>
                 <div>
-                    <label for="prof_id">معرف الأستاذ:</label>
-                    <input type="text" id="prof_id" name="prof_id" required>
-                </div>
-                <div>
                     <label for="pdf_lec">رفع ملف PDF:</label>
                     <input type="file" id="pdf_lec" name="pdf_lec" accept="application/pdf" required>
                 </div>
@@ -54,10 +50,6 @@
                 <div>
                     <label for="editDescription">وصف المحاضرة:</label>
                     <textarea id="editDescription" name="editDescription" required></textarea>
-                </div>
-                <div>
-                    <label for="editProfId">معرف الأستاذ:</label>
-                    <input type="text" id="editProfId" name="editProfId" required>
                 </div>
                 <div>
                     <label for="editPdfLec">رفع ملف PDF جديد:</label>
@@ -83,14 +75,13 @@
         </div>
     </div>
 
-
     <script src="../lib/pocketbase.umd.js"></script>
+    <script> const pb = new PocketBase('http://127.0.0.1:8090'); </script>
+    <script src="../js/ChackTokenProf.js"></script>
 
-    <script src="../js/update_lec.js"></script>
     <script src="../js/fetchLectures.js"></script>
     <script src="../js/add_lect.js"></script>
+    <script src="../js/update_lec.js"></script>
     <script src="../js/delete_lec.js"></script>
-
-
 </body>
 </html>
