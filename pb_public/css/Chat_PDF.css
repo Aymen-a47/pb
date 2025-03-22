@@ -1,130 +1,168 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap');
 
 body {
-  
-  text-align: center;
-  background-color: #ffffff;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100vh;
+    text-align: center;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Cairo', sans-serif;
 }
-.sidebar {
- 
-  background: linear-gradient(to bottom, #1a237e, #1976d2);
-  width: 200px;
-  height: 100%;
-  padding: 20px;
-  border-top-left-radius: 30px;
-  border-bottom-left-radius: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: fixed;
-  right: -210px;
-  top: 0;
-  transition: right 0.3s ease; 
-  
-}
-.sidebar:hover {
-transition: 0.8s;
-  right: 0;
-}
-.menu-button {
-  font-family: 'Cairo', 'Changa', Geneva, Verdana, sans-serif;
-  display: block;
-  background: none;
-  border: 2px solid white;
-  color: white;
-  padding: 3px 25px;
-  font-size: 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  margin: 5px 0;
-  width: 90%;
-}
-.menu-button:hover {
 
-transform: scale(1.1);
-transition: 0.5s ;
-  background: white;
-  color: #1a237e;
+.sidebar {
+    background: linear-gradient(to bottom, #1a237e, #1976d2);
+    width: 200px;
+    height: 100%;
+    padding: 20px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    right: -210px;
+    top: 0;
+    transition: right 0.3s ease;
+    z-index: 1000;
 }
+
+.sidebar:hover {
+    transition: 0.8s;
+    right: 0;
+}
+
+.menu-button {
+    font-family: 'Cairo', 'Changa', Geneva, Verdana, sans-serif;
+    display: block;
+    background: none;
+    border: 2px solid white;
+    color: white;
+    padding: 3px 25px;
+    font-size: 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 5px 0;
+    width: 90%;
+}
+
+.menu-button:hover {
+    transform: scale(1.1);
+    transition: 0.5s;
+    background: white;
+    color: #1a237e;
+}
+
+/* Main content wrapper */
+.main-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    height: 100vh;
+    padding-right: 20px;
+}
+
 .content {
-overflow: hidden;
-  flex: 1;
-  font-size: 80px;
-  color: #1a237e;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
 }
+
+.content iframe {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 .ai-button {
-  background: #1976d2;  background: linear-gradient(to bottom, #1a237e, #1976d2);
-  color: white;
-  font-size: 18px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  font-weight: bold;
+    background: linear-gradient(to bottom, #1a237e, #1976d2);
+    color: white;
+    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.ai-button a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
 .container {
-
-display: flex;
-height: 100vh;
-width: 40%;
-
+    width: 40%;
+    height: 700px;
+    margin-left: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-.pdf-viewer {
-flex: 1;
-border-right: 2px solid #ccc;
+.container.hidden {
+    width: 0;
+    margin-left: 0;
+    overflow: hidden;
 }
 
 .chatbot {
-flex: 1;
-display: flex;
-flex-direction: column;
-padding: 10px;
-background-color: #f9f9f9;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 #chat-window {
-flex: 1;
-border-radius: 10px;
-border: 1px solid #ccc;
-margin-bottom: 10px;
-padding: 10px;
-overflow-y: auto;
-background-color: #fff;
+    flex: 1;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #fff;
 }
 
 #chat-input {
-padding: 10px;
-border: 1px solid #ccc;
-border-radius: 5px;
-margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 #send-btn {
-padding: 10px;
-background: linear-gradient(70deg, #1a237e, #1976d2);
-
-
-color: #fff;
-border: none;
-border-radius: 5px;
-cursor: pointer;
+    padding: 10px;
+    background: linear-gradient(70deg, #1a237e, #1976d2);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 #send-btn:hover {
-background-color: #0056b3;
-transform: scale(1.01);
-transition: 0.8s;
+    background-color: #0056b3;
+    transform: scale(1.01);
+    transition: 0.8s;
 }

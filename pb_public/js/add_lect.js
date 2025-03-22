@@ -1,4 +1,4 @@
-async function addLecture(event) {
+async function addLecture(event){
     event.preventDefault(); // منع إعادة تحميل الصفحة
 
     const formData = new FormData(event.target);
@@ -9,8 +9,10 @@ async function addLecture(event) {
     // التحقق من التوكن واستخراج prof_id
     const userData = checkToken();
     if (!userData) {
+
         return; // إذا كان التوكن غير صالح، يتم الخروج من الدالة
-    }
+   
+      }
 
     const prof_id = userData.id;
 
