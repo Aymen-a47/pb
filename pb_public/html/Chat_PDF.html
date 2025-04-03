@@ -5,27 +5,166 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الملزمات</title>
     <link rel="stylesheet" href="/pb_public/css/Chat_PDF.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <style>
+        /* أنماط الدردشة المحسنة */
+        #chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin: 8px 0;
+            padding: 12px 15px;
+            border-radius: 18px;
+            max-width: 85%;
+            line-height: 1.7;
+            font-size: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .user-message {
+            background: #e3f2fd;
+            margin-left: auto;
+            margin-right: 0;
+            border-bottom-right-radius: 5px;
+        }
+        .ai-message {
+            background: #f8f9fa;
+            margin-right: auto;
+            margin-left: 0;
+            border-bottom-left-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+        .ai-message p {
+            margin: 10px 0;
+            text-align: right;
+        }
+        .ai-message ol, .ai-message ul {
+            padding-right: 25px;
+            margin: 10px 0;
+        }
+        .ai-message li {
+            margin-bottom: 8px;
+            position: relative;
+            right: 5px;
+        }
+        .ai-message strong {
+            color: #1a237e;
+            font-weight: bold;
+        }
+        .ai-message .section-title {
+            color: #1a237e;
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+        #chat-input {
+            width: 75%;
+            padding: 12px 18px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            margin-right: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+        #send-btn {
+            padding: 12px 25px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        #send-btn:hover {
+            background: #0d47a1;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .typing-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #333;
+            vertical-align: middle;
+            margin-right: 2px;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        #pdf-progress {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+        #pdf-progress-bar {
+            width: 0%;
+            height: 25px;
+            background: linear-gradient(90deg, #1a237e, #3949ab);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 25px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s;
+        }
+        #stop-btn {
+            padding: 12px 20px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            display: none;
+            transition: background 0.3s;
+        }
+        #stop-btn:hover {
+            background: #b71c1c;
+        }
+    </style>
 </head>
 <body>
   <div class="sidebar" id="sidebar">
-      <!-- هنا سيتم عرض قائمة المحاضرات بشكل ديناميكي -->
+      <!-- قائمة المحاضرات -->
   </div>
 
   <div class="main-wrapper">
     <div class="content" id="content">
-        <!-- هنا سيتم عرض ملفات PDF -->
-        <div style="font-size: 30px; color: #1a237e;">اختر محاضرة من القائمة</div>
-       
+        <div style="font-size: 30px; color: #1a237e; margin-bottom: 20px;">اختر محاضرة من القائمة</div>
+        <div id="pdf-progress">
+            <div id="pdf-progress-bar">0%</div>
+        </div>
     </div>
     
-
-    <div class="container" id="container">
+    <div class="container hidden" id="container">
         <div class="chatbot">
             <div id="chat-window">
-                <div id="chat-messages"></div>
+                <div id="chat-messages">
+                    <div class="message ai-message">
+                        <p>مرحباً بك في مساعدك الذكي للمحاضرات!</p>
+                        <p>يمكنك اختيار أي محاضرة من القائمة ثم طرح أسئلتك عنها وسأساعدك في فهم المحتوى.</p>
+                    </div>
+                </div>
             </div>
-            <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا..." />
-            <button id="send-btn">إرسال</button>
+            <div style="display: flex; align-items: center; margin-top: 15px;">
+                <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا..." />
+                <button id="send-btn">إرسال</button>
+                <button id="stop-btn">إيقاف</button>
+            </div>
         </div>
     </div>
   </div>
@@ -36,73 +175,441 @@
 
   <script src="https://cdn.jsdelivr.net/npm/pocketbase/dist/pocketbase.umd.js"></script>
   <script>
-    const pb = new PocketBase('http://127.0.0.1:8090'); // الاتصال بالنسخة المحلية
+    // تهيئة PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+    
+    const pb = new PocketBase('http://127.0.0.1:8090');
+    const GEMINI_API_KEY = 'AIzaSyAaTg7Df2V2hWXwa-v3uOxm2NtBeuareSo';
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    
+    let currentLectureText = '';
+    let conversationHistory = [];
+    let typingInterval;
+    let currentTypingMessage;
+    let isBotResponding = false;
+    let isWaitingForResponse = false;
+
+    // دالة لتنظيم وتنسيق الردود
+    function formatResponse(text) {
+        // تنظيف النص من العلامات غير المرغوبة
+        let formatted = text
+            .replace(/\*\*/g, '') // إزالة **
+            .replace(/\#/g, '') // إزالة #
+            .replace(/\-\ /g, '• ') // تحويل النقاط إلى رموز نقطية
+            .replace(/\n+/g, '\n'); // تقليل الأسطر الفارغة
+
+        // تحويل النص إلى HTML منظم
+        let html = '';
+        let lines = formatted.split('\n');
+        let inList = false;
+
+        for (let line of lines) {
+            line = line.trim();
+            if (!line) continue;
+
+            if (line.startsWith('• ')) {
+                if (!inList) {
+                    html += '<ul>';
+                    inList = true;
+                }
+                html += `<li>${line.substring(2)}</li>`;
+            } else {
+                if (inList) {
+                    html += '</ul>';
+                    inList = false;
+                }
+                
+                if (line.endsWith(':')) {
+                    html += `<span class="section-title">${line}</span>`;
+                } else {
+                    html += `<p>${line}</p>`;
+                }
+            }
+        }
+
+        if (inList) {
+            html += '</ul>';
+        }
+
+        return html;
+    }
 
     // دالة لجلب المحاضرات وعرضها
     async function fetchLectures() {
         const sidebar = document.getElementById('sidebar');
-        sidebar.innerHTML = ''; // مسح القائمة الحالية
+        sidebar.innerHTML = '';
 
-        // الحصول على اسم المادة من localStorage
         const selectedSubject = localStorage.getItem('selectedSubject');
 
         if (!selectedSubject) {
-            alert('لم يتم تحديد مادة.');
+            alert('الرجاء تحديد مادة أولاً.');
             return;
         }
 
         try {
-            // جلب المحاضرات الخاصة بالمادة المحددة
             const records = await pb.collection('Lectures').getFullList({
-                filter: `Subject = '${selectedSubject}'`, // تصفية حسب المادة
-                sort: '-created', // ترتيب حسب التاريخ (الأحدث أولاً)
+                filter: `Subject = '${selectedSubject}'`,
+                sort: '-created',
             });
 
-            // عرض البيانات في القائمة
+            if (records.length === 0) {
+                sidebar.innerHTML = '<p>لا توجد محاضرات متاحة لهذه المادة.</p>';
+                return;
+            }
+
             records.forEach((lecture) => {
                 const button = document.createElement('button');
                 button.className = 'menu-button';
-                button.textContent = lecture.title; // عرض عنوان المحاضرة
-                button.onclick = () => viewPdf(lecture); // عرض ملف PDF عند الضغط
+                button.textContent = lecture.title;
+                button.onclick = () => viewPdf(lecture);
                 sidebar.appendChild(button);
             });
         } catch (error) {
-            console.error('فشل في جلب المحاضرات:', error);
-            sidebar.innerHTML = '<p>حدث خطأ أثناء جلب المحاضرات.</p>';
+            console.error('خطأ في جلب المحاضرات:', error);
+            sidebar.innerHTML = '<p>حدث خطأ أثناء تحميل المحاضرات. يرجى المحاولة لاحقاً.</p>';
         }
     }
 
-    // دالة لعرض ملف PDF مباشرةً من PocketBase
-    function viewPdf(lecture) {
-        const content = document.getElementById('content');
-        const pdfUrl = pb.files.getUrl(lecture, lecture.pdf_lec); // الحصول على رابط الملف
+    // دالة لاستخراج النص من PDF
+    async function extractTextFromPDF(pdfUrl) {
+        const progressBar = document.getElementById('pdf-progress');
+        const progressBarInner = document.getElementById('pdf-progress-bar');
         
-        content.innerHTML = `<iframe src="${pdfUrl}" width="900px" height="700px"></iframe>`;
+        progressBar.style.display = 'block';
+        progressBarInner.style.width = '0%';
+        progressBarInner.textContent = '0%';
+        
+        try {
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            const pdf = await loadingTask.promise;
+            
+            let fullText = "";
+            const totalPages = pdf.numPages;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map(item => item.str).join(' ') + '\n';
+                
+                // تحديث شريط التقدم
+                const progress = Math.round((i / totalPages) * 100);
+                progressBarInner.style.width = `${progress}%`;
+                progressBarInner.textContent = `${progress}%`;
+                
+                // إعطاء فرصة للمتصفح للتنفس
+                if (i % 5 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            
+            progressBar.style.display = 'none';
+            return fullText;
+        } catch (error) {
+            console.error("خطأ في استخراج النص من PDF:", error);
+            progressBar.style.display = 'none';
+            return null;
+        }
     }
 
-    // تعديل دالة عند الضغط على زر AI
+    // دالة لعرض ملف PDF واستخراج النص منه
+    async function viewPdf(lecture) {
+        const content = document.getElementById('content');
+        const pdfUrl = pb.files.getUrl(lecture, lecture.pdf_lec);
+        
+        // عرض رسالة تحميل
+        content.innerHTML = `
+            <div style="text-align:center; margin:20px 0;">
+                <div style="font-size:18px; color:#1a237e;">جاري تحميل المحاضرة: ${lecture.title}</div>
+            </div>
+            <div id="pdf-progress">
+                <div id="pdf-progress-bar">0%</div>
+            </div>
+        `;
+        
+        try {
+            // بدء استخراج النص من PDF
+            const pdfText = await extractTextFromPDF(pdfUrl);
+            
+            // عرض PDF بعد الاستخراج
+            content.innerHTML = `
+                <iframe src="${pdfUrl}" width="900px" height="700px" id="pdf-frame"></iframe>
+            `;
+            
+            // تخزين النص المستخرج
+            currentLectureText = `عنوان المحاضرة: ${lecture.title}\n\n`;
+            currentLectureText += `وصف المحاضرة: ${lecture.description || 'لا يوجد وصف'}\n\n`;
+            
+            if (pdfText) {
+                currentLectureText += `محتوى المحاضرة: ${pdfText.substring(0, 20000)}...`;
+                
+                // إعلام المستخدم بنجاح التحميل
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.innerHTML += `
+                    <div class="message ai-message">
+                        <p>تم تحميل المحاضرة: <strong>${lecture.title}</strong></p>
+                        <p>يمكنك الآن طرح أسئلتك عن محتوى المحاضرة.</p>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } else {
+                currentLectureText += "تعذر استخراج النص من ملف PDF.";
+                
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.innerHTML += `
+                    <div class="message ai-message">
+                        <p>تم تحميل المحاضرة ولكن تعذر قراءة محتواها النصي.</p>
+                        <p>يمكنك طرح أسئلة عامة عن المحاضرة فقط.</p>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        } catch (error) {
+            console.error("خطأ في تحميل المحاضرة:", error);
+            content.innerHTML = `
+                <div style="text-align:center; margin:20px 0; color:#d32f2f;">
+                    <div style="font-size:18px;">حدث خطأ أثناء تحميل المحاضرة</div>
+                    <p>${error.message}</p>
+                </div>
+            `;
+        }
+    }
+
+    // دالة للتواصل مع Gemini API
+    async function queryGemini(prompt) {
+        try {
+            // إعداد نص الطلب مع السياق
+            const fullPrompt = `
+                أنت مساعد ذكي متخصص في شرح المحاضرات الجامعية.
+                المحاضرة الحالية عن: ${localStorage.getItem('selectedSubject')}
+                
+                معلومات المحاضرة:
+                ${currentLectureText}
+                
+                السؤال:
+                ${prompt}
+                
+                التعليمات:
+                1. أجب بلغة عربية فصحى واضحة
+                2. نظم الإجابة في نقاط واضحة
+                3. استخدم العناوين الرئيسية والفرعية
+                4. تجنب استخدام العلامات المميزة مثل ** أو #
+                5. قدم أمثلة توضيحية عند الحاجة
+                6. أجب باختصار ودقة
+            `;
+            
+            conversationHistory.push({
+                role: "user",
+                parts: [{ text: fullPrompt }]
+            });
+            
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: conversationHistory,
+                    generationConfig: {
+                        maxOutputTokens: 2000,
+                        temperature: 0.7
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (!data.candidates || !data.candidates[0]?.content?.parts[0]?.text) {
+                throw new Error("Invalid response structure from API");
+            }
+            
+            let reply = data.candidates[0].content.parts[0].text;
+            
+            // تطبيق التنسيق على الرد
+            reply = formatResponse(reply);
+            
+            conversationHistory.push({
+                role: "model",
+                parts: [{ text: reply }]
+            });
+            
+            return reply;
+        } catch (error) {
+            console.error('خطأ في الاتصال بـ Gemini API:', error);
+            return `
+                <p>عذراً، حدث خطأ أثناء محاولة الحصول على الإجابة.</p>
+                <p>تفاصيل الخطأ: ${error.message}</p>
+                <p>الرجاء المحاولة مرة أخرى لاحقاً.</p>
+            `;
+        }
+    }
+
+    // دالة لعرض الرسائل بشكل تدريجي
+    function typeMessage(element, message, speed = 20) {
+        let i = 0;
+        clearInterval(typingInterval);
+        
+        element.innerHTML = '<span class="typing-cursor"></span>';
+        
+        typingInterval = setInterval(() => {
+            if (i < message.length) {
+                element.innerHTML = message.substring(0, i + 1) + '<span class="typing-cursor"></span>';
+                i++;
+                
+                // التمرير التلقائي عند الوصول لنهاية الشاشة
+                if (i % 50 === 0) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            } else {
+                clearInterval(typingInterval);
+                element.innerHTML = message;
+                isBotResponding = false;
+                isWaitingForResponse = false;
+                updateUIState();
+                
+                // التمرير النهائي
+                element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }, speed);
+    }
+
+    // دالة إرسال الرسائل
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        
+        if (message === '' || isWaitingForResponse) return;
+        
+        const chatMessages = document.getElementById('chat-messages');
+        
+        // عرض رسالة المستخدم
+        chatMessages.innerHTML += `<div class="message user-message">${message}</div>`;
+        
+        // عرض رسالة التحميل
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'message ai-message loading';
+        loadingDiv.innerHTML = 'جاري تحضير الإجابة...';
+        chatMessages.appendChild(loadingDiv);
+        
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        input.value = '';
+        isWaitingForResponse = true;
+        isBotResponding = true;
+        updateUIState();
+        
+        try {
+            // الحصول على الإجابة من Gemini
+            const response = await queryGemini(message);
+            
+            // إزالة رسالة التحميل
+            loadingDiv.remove();
+            
+            // عرض الإجابة بشكل تدريجي
+            const responseDiv = document.createElement('div');
+            responseDiv.className = 'message ai-message';
+            chatMessages.appendChild(responseDiv);
+            
+            currentTypingMessage = responseDiv;
+            typeMessage(responseDiv, response, 10);
+        } catch (error) {
+            console.error('خطأ في إرسال الرسالة:', error);
+            loadingDiv.remove();
+            
+            chatMessages.innerHTML += `
+                <div class="message ai-message">
+                    <p>حدث خطأ غير متوقع أثناء معالجة طلبك.</p>
+                    <p>الرجاء المحاولة مرة أخرى.</p>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            isBotResponding = false;
+            isWaitingForResponse = false;
+            updateUIState();
+        }
+    }
+
+    // دالة لتحديث واجهة المستخدم
+    function updateUIState() {
+        const input = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        
+        if (isWaitingForResponse) {
+            input.disabled = true;
+            sendBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+        } else {
+            input.disabled = false;
+            sendBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+        }
+    }
+
+    // دالة لإيقاف الرد
+    function stopResponse() {
+        clearInterval(typingInterval);
+        if (currentTypingMessage) {
+            currentTypingMessage.innerHTML = currentTypingMessage.textContent;
+        }
+        isBotResponding = false;
+        isWaitingForResponse = false;
+        updateUIState();
+    }
+
+    // أحداث النقر
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+    document.getElementById('stop-btn').addEventListener('click', stopResponse);
+    
+    // حدث الضغط على Enter
+    document.getElementById('chat-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !isWaitingForResponse) {
+            sendMessage();
+        }
+    });
+
+    // حدث تغيير نص الإدخال
+    document.getElementById('chat-input').addEventListener('input', function() {
+        const sendBtn = document.getElementById('send-btn');
+        if (this.value.trim() && !isWaitingForResponse) {
+            sendBtn.style.display = 'inline-block';
+        } else {
+            sendBtn.style.display = 'none';
+        }
+    });
+
+    // حدث الضغط على زر AI
     document.getElementById('ai-button').addEventListener('click', function() {
         const container = document.getElementById('container');
         const content = document.getElementById('content');
         
-        // تبديل حالة الإخفاء للكونتينر
+        // تبديل حالة الإخفاء
         container.classList.toggle('hidden');
         
-        // تحديث عرض iframe بناءً على حالة container
+        // ضبط حجم iframe
         const iframe = content.querySelector('iframe');
         if (iframe) {
-            if (container.classList.contains('hidden')) {
-                // إذا كان container مخفي، اعطِ المساحة للـ iframe
-                iframe.style.width = '1500px';
-            } else {
-                // إذا كان container ظاهراً، قلل مساحة الـ iframe
-                iframe.style.width = '850px';
-            }
+            iframe.style.width = container.classList.contains('hidden') ? '1500px' : '850px';
         }
     });
 
-    // جلب المحاضرات عند تحميل الصفحة
-    window.onload = fetchLectures;
+    // تحميل المحاضرات عند بدء التشغيل
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchLectures();
+        
+        // إظهار رسالة ترحيبية
+        setTimeout(() => {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML += `
+                <div class="message ai-message">
+                    <p>مرحباً بك في نظام الملزمات الذكي!</p>
+                    <p>لبدء الاستخدام، يرجى اختيار محاضرة من القائمة الجانبية.</p>
+                    <p>ثم يمكنك طرح أي أسئلة عن محتوى المحاضرة وسأساعدك في فهمها.</p>
+                </div>
+            `;
+        }, 1000);
+    });
   </script>
 </body>
 </html>
