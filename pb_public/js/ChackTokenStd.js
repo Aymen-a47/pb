@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
               // حذف الكوكي عند تسجيل الخروج
               document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
               // إعادة تحميل الصفحة
-              window.location.reload();
+              window.location.href = 'LoginAsStudent.html';
           });
           
           // إضافة زر تسجيل الخروج إلى العنصر

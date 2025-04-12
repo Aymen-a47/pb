@@ -328,12 +328,14 @@ position: relative; /* لجعل الدائرة البيضاء في الزاوي�
   left: 10px;
   width: 60px;
   height: 60px;
+  background-color: white; /* لون الخلفية */
   background-image: url('/pb_public/img/comment_4015902.png'); /* مسار الصورة */
    background-repeat:no-repeat ;
   background-size: 60%; /* لتغطية المساحة المحددة */
   background-position: center; /* توسيط الصورة */
   border-radius: 50%;
   border: 2px solid white; /* إطار أبيض حول الصورة */
+  z-index: 1; /* لضمان ظهور الدائرة فوق الكارد */
 }
 /* من نحن  */
 
