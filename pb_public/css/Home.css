@@ -324,12 +324,16 @@ position: relative; /* لجعل الدائرة البيضاء في الزاوي�
 .comment-card::before {
   content: "";
   position: absolute;
-  top: 10px; /* تعديل الموضع ليكون بعيداً قليلاً عن الزاوية */
-  left: 10px; /* تعديل الموضع ليكون بعيداً قليلاً عن الزاوية */
-  width: 60px; /* تكبير الدائرة قليلاً */
-  height: 60px; /* تكبير الدائرة قليلاً */
-  background-color: #fff;
+  top: 10px;
+  left: 10px;
+  width: 60px;
+  height: 60px;
+  background-image: url('/pb_public/img/comment_4015902.png'); /* مسار الصورة */
+   background-repeat:no-repeat ;
+  background-size: 60%; /* لتغطية المساحة المحددة */
+  background-position: center; /* توسيط الصورة */
   border-radius: 50%;
+  border: 2px solid white; /* إطار أبيض حول الصورة */
 }
 /* من نحن  */
 
@@ -360,3 +364,53 @@ text-align: center; /* توسيط النص */
     width: 100%; /* ملء العرض بالكامل */
     bottom: 0; /* تثبيت الفوتر في أسفل الصفحة */
   }
+  /* تعليقات بعض طلابنا  */
+.card-contaner-comment {
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* لجعل الكروت بنفس الارتفاع */
+  flex-wrap: wrap;
+  padding: 60px;
+  gap: 20px; /* مسافة بين الكروت */
+}
+
+.comment-card {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image: linear-gradient(to bottom, #20407C 0%, #3A75E2 74%);
+  margin: 10px;
+  padding: 30px 20px;
+  border-radius: 40px;
+  width: 300px;
+  min-height: 250px;
+  box-sizing: border-box;
+  transition: transform 0.3s;
+  position: relative;
+}
+
+.comment-card:hover {
+  transform: scale(1.05);
+}
+
+.student-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  margin-bottom: 15px;
+}
+
+.comment-card h2 {
+  margin: 10px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.comment-card p {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+}

@@ -1,46 +1,50 @@
+// التحقق من وجود توكن المستخدم وعرض اسم المستخدم بدلاً من "التسجيل"
+document.addEventListener('DOMContentLoaded', function() {
+  // دالة للحصول على قيمة الكوكي حسب الاسم
+  function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+  }
 
-// دالة لاستخراج التوكن من الكوكيز
-function getTokenFromCookies(cookieName) {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const [name, value] = cookie.trim().split('=');
-        if (name === cookieName) {
-            return value;
-        }
-    }
-    return null; // إذا لم يتم العثور على التوكن
-}
-
-// دالة للتحقق من التوكن
-function checkToken() {
-    const token = getTokenFromCookies('auth_token'); // استخراج التوكن من الكوكيز
-
-    if (!token) {
-        window.location.href = 'LogInAsStudent.html'; // توجيه المستخدم إلى صفحة تسجيل الدخول
-        return null;
-    }
-
-    try {
-        // فك تشفير التوكن (تحويله من base64 إلى JSON)
-        const tokenData = JSON.parse(atob(token));
-
-        // التحقق من أن التوكن يحتوي على البيانات المطلوبة
-        if (!tokenData.id || !tokenData.email) {
-            throw new Error('التوكن غير صالح.');
-        }
-
-        // إرجاع بيانات المستخدم
-        return tokenData;
-    } catch (error) {
-        console.error('فشل في تحقق من التوكن:', error);
-        alert('التوكن غير صالح، يرجى تسجيل الدخول مرة أخرى.');
-        window.location.href = 'LogInAsStudent.html';
-        return null;
-    }
-}
-
-// تشغيل التحقق من التوكن عند تحميل الصفحة
-window.onload = function () {
-    const userData = checkToken();
-
-};
+  // الحصول على التوكن من الكوكيز
+  const token = getCookie('auth_token');
+  
+  // الحصول على عنصر تسجيل الدخول
+  const loginElement = document.querySelector('.log-in');
+  
+  // إذا وجد التوكن، نقوم بفك تشفيره وعرض اسم المستخدم
+  if (token) {
+      try {
+          // فك تشفير التوكن (base64)
+          const tokenData = JSON.parse(atob(token));
+          
+          // تغيير كلاس العنصر لتنسيقه بشكل مختلف إذا لزم الأمر
+          loginElement.className = 'user-logged-in';
+          
+          // تغيير محتوى عنصر التسجيل ليعرض فقط زر تسجيل الخروج
+          loginElement.innerHTML = '';
+          
+          // إضافة زر تسجيل الخروج
+          const logoutButton = document.createElement('a');
+          logoutButton.href = "#";
+          logoutButton.textContent = "تسجيل الخروج";
+          logoutButton.addEventListener('click', function(e) {
+              e.preventDefault();
+              // حذف الكوكي عند تسجيل الخروج
+              document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+              // إعادة تحميل الصفحة
+              window.location.reload();
+          });
+          
+          // إضافة زر تسجيل الخروج إلى العنصر
+          loginElement.appendChild(logoutButton);
+          // نهاية كتلة if
+      } catch (error) {
+          console.error('خطأ في قراءة التوكن:', error);
+          // إعادة تعيين الكوكي إذا كان هناك خطأ في قراءته
+          document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
+  }
+});
